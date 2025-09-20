@@ -45,9 +45,23 @@ if %errorlevel% neq 0 (
 REM نصب وابستگی‌ها
 echo 📦 بررسی و نصب وابستگی‌ها...
 pip install --upgrade pip
-pip install -r requirements.txt
+
+REM حل مشکل pandas در ویندوز
+echo 🔧 حل مشکل pandas...
+pip uninstall pandas numpy -y > nul 2>&1
+pip install numpy==1.24.3 --only-binary=all --no-cache-dir
+pip install pandas==2.0.3 --only-binary=all --no-cache-dir
+
+REM نصب سایر پکیج‌ها
+if exist "requirements_windows.txt" (
+    pip install -r requirements_windows.txt --only-binary=all --no-cache-dir
+) else (
+    pip install -r requirements.txt --only-binary=all --no-cache-dir
+)
+
 if %errorlevel% neq 0 (
     echo ❌ خطا در نصب وابستگی‌ها
+    echo 💡 سعی کنید فایل fix_windows.bat را اجرا کنید
     pause
     exit /b 1
 )

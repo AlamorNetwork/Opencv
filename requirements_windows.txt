@@ -1,3 +1,4 @@
+# Requirements for Windows - Precompiled wheels only
 streamlit==1.28.1
 opencv-python-headless==4.8.1.78
 pytesseract==0.3.10
@@ -9,3 +10,7 @@ streamlit-option-menu==0.3.6
 plotly==5.17.0
 openpyxl==3.1.2
 xlsxwriter==3.1.7
+
+# Additional Windows-specific packages
+pywin32==306
+colorama==0.4.6
