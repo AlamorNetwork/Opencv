@@ -90,7 +90,6 @@ logs/
 output/
 *.csv
 *.xlsx
-*.txt
 
 # Large files (PDFs, images)
 *.pdf
