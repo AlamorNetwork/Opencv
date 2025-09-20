@@ -116,16 +116,26 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 ```
 PDFTOTEXT/
 │
-├── app.py                 # فایل اصلی برنامه
-├── requirements.txt       # وابستگی‌های پروژه
-├── README.md             # راهنمای استفاده
-└── temp/                 # فولدر موقت (ایجاد خودکار)
+├── app.py                      # فایل اصلی برنامه Streamlit
+├── config.py                   # تنظیمات و کانفیگ‌ها
+├── utils.py                    # تابع‌های کمکی
+├── requirements.txt            # وابستگی‌های Python
+├── install.py                  # نصب خودکار پروژه
+├── install_system_deps.sh      # نصب وابستگی‌های سیستمی Linux
+├── run.bat                     # اجرا در ویندوز
+├── run.sh                      # اجرا در Linux/macOS  
+├── opencv_fix.md              # راهنمای حل مشکل OpenCV
+├── README.md                  # راهنمای کامل
+├── LICENSE                    # مجوز MIT
+├── .gitignore                 # فایل‌های نادیده گرفته شده
+└── temp/                      # پوشه موقت (ایجاد خودکار)
+    └── output/                # پوشه خروجی (ایجاد خودکار)
 ```
 
 ## 📋 وابستگی‌های اصلی
 
 - `streamlit` - رابط کاربری وب
-- `opencv-python` - پردازش تصویر
+- `opencv-python-headless` - پردازش تصویر (نسخه headless برای سرورها)
 - `pytesseract` - تشخیص نویسه
 - `pandas` - مدیریت داده‌ها
 - `pdf2image` - تبدیل PDF به تصویر
@@ -149,17 +159,42 @@ PDFTOTEXT/
 
 ### مشکلات رایج:
 
-1. **خطا در تشخیص Tesseract:**
+1. **خطا در OpenCV (محیط Linux headless):**
+   ```
+   ImportError: libGL.so.1: cannot open shared object file
+   ```
+   **راه‌حل:**
+   ```bash
+   # حذف opencv-python و نصب نسخه headless
+   pip uninstall opencv-python -y
+   pip install opencv-python-headless
+   
+   # یا استفاده از اسکریپت خودکار
+   ./install_system_deps.sh
+   ```
+
+2. **خطا در تشخیص Tesseract:**
    - اطمینان حاصل کنید که Tesseract نصب شده است
    - مسیر tesseract را در کد تنظیم کنید
+   - برای Linux: `sudo apt-get install tesseract-ocr tesseract-ocr-fas`
 
-2. **کیفیت پایین تشخیص:**
+3. **کیفیت پایین تشخیص:**
    - کیفیت تصاویر PDF را بررسی کنید
    - از فایل‌هایی با کنتراست بهتر استفاده کنید
+   - DPI فایل PDF باید حداقل 300 باشد
 
-3. **خطا در تبدیل PDF:**
+4. **خطا در تبدیل PDF:**
    - اطمینان حاصل کنید که فایل PDF آسیب ندیده است
    - فایل را با نرم‌افزار دیگری باز کنید تا از سلامت آن مطمئن شوید
+   - پکیج poppler-utils را نصب کنید: `sudo apt-get install poppler-utils`
+
+5. **مشکلات محیط Docker:**
+   ```dockerfile
+   RUN apt-get update && apt-get install -y \
+       libglib2.0-0 libsm6 libxext6 libxrender-dev \
+       tesseract-ocr tesseract-ocr-fas poppler-utils
+   RUN pip install opencv-python-headless
+   ```
 
 ## 📞 پشتیبانی
 

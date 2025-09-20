@@ -63,24 +63,47 @@ fi
 
 echo -e "${GREEN}✅ تمام وابستگی‌ها نصب شدند${NC}"
 
+# بررسی وابستگی‌های سیستمی
+echo -e "${BLUE}🔍 بررسی وابستگی‌های سیستمی...${NC}"
+
+# بررسی اینکه آیا در محیط headless هستیم
+if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
+    echo -e "${BLUE}🖥️  محیط headless تشخیص داده شد${NC}"
+    echo "از opencv-python-headless استفاده می‌شود"
+fi
+
 # بررسی نصب Tesseract
 echo -e "${BLUE}🔍 بررسی نصب Tesseract OCR...${NC}"
 if ! command -v tesseract &> /dev/null; then
     echo -e "${YELLOW}⚠️  Tesseract OCR یافت نشد${NC}"
-    echo "برای نصب Tesseract:"
-    echo "  Ubuntu/Debian: sudo apt-get install tesseract-ocr tesseract-ocr-fas"
-    echo "  CentOS/RHEL: sudo yum install tesseract tesseract-langpack-fas"
-    echo "  macOS: brew install tesseract tesseract-lang"
     echo ""
-    read -p "آیا می‌خواهید بدون Tesseract ادامه دهید؟ (y/N): " continue_choice
-    if [[ ! $continue_choice =~ ^[Yy]$ ]]; then
-        exit 1
+    echo "آیا می‌خواهید وابستگی‌های سیستمی را نصب کنید؟ (y/N)"
+    read -p "پاسخ: " install_deps
+    
+    if [[ $install_deps =~ ^[Yy]$ ]]; then
+        echo -e "${BLUE}🔧 نصب وابستگی‌های سیستمی...${NC}"
+        if [ -f "install_system_deps.sh" ]; then
+            bash install_system_deps.sh
+        else
+            echo -e "${RED}❌ فایل install_system_deps.sh یافت نشد${NC}"
+            echo "برای نصب دستی Tesseract:"
+            echo "  Ubuntu/Debian: sudo apt-get install tesseract-ocr tesseract-ocr-fas"
+            echo "  CentOS/RHEL: sudo yum install tesseract tesseract-langpack-fas"
+            echo "  macOS: brew install tesseract tesseract-lang"
+        fi
+    else
+        echo ""
+        echo "آیا می‌خواهید بدون Tesseract ادامه دهید؟ (y/N): "
+        read -p "پاسخ: " continue_choice
+        if [[ ! $continue_choice =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
     fi
 else
     echo -e "${GREEN}✅ Tesseract OCR نصب شده است${NC}"
     
     # بررسی پشتیبانی زبان فارسی
-    if tesseract --list-langs | grep -q "fas"; then
+    if tesseract --list-langs 2>/dev/null | grep -q "fas"; then
         echo -e "${GREEN}✅ پشتیبانی زبان فارسی موجود است${NC}"
     else
         echo -e "${YELLOW}⚠️  بسته زبان فارسی نصب نشده است${NC}"
